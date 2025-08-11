@@ -25,12 +25,24 @@ async function getPokemonsName() {
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${beginNum}&limit=${endNum}`);
     let responseToJson = await response.json();
 
-    // console.log(responseImgJson.sprites);
+    
+
+    
     for(id; id < 20; id++) { 
-        let responseImg = await fetch(`https://pokeapi.co/api/v2/pokemon-form/${id + 1}`);
-        let responseImgJson = await responseImg.json();
+        // let responseImg = await fetch(`https://pokeapi.co/api/v2/pokemon-form/${id + 1}`);
+        let pokeImg = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${id + 1}.svg`;
+        
+        let pokeType = await fetch(`https://pokeapi.co/api/v2/pokemon/${id + 1}`);
+        let pokeTypeJson = await pokeType.json();
+        console.log(pokeTypeJson.types[0].type.name);
+
+        let pokemonType = `./icons/${pokeTypeJson.types[0].type.name}.svg`;
+        
+
+        // let responseImgJson = await responseImg.json();
         console.log(responseToJson.results[id].name);
-        document.getElementById('wrapper').innerHTML += loadPokemons(id, responseToJson.results[id].name, responseImgJson.sprites.front_default);
+        document.getElementById('wrapper').innerHTML += loadPokemons(id, responseToJson.results[id].name, pokeImg, pokemonType);
+        // responseImgJson.sprites.front_default
     }
     console.log(namesOfPokemon);
 }
@@ -43,12 +55,15 @@ async function getPokemonsName() {
 //     }
 // }
 
-function loadPokemons(id, pokemonName, img) {
+function loadPokemons(id, pokemonName, img, pokemonType) {
     return `
         <div class="wrapper__card">
             <div class="wrapper__card_pokemon">
-                <div class="wrapper__card_pokemon-num">${id + 1}</div>
+                <div class="wrapper__card_pokemon-num">#${id + 1}</div>
                 <div class="wrapper__card_pokemon-name">${pokemonName}</div>
+                <div class="wrapper__card_pokemon-type">
+                    <img src="${pokemonType}" alt="">
+                </div>
             </div>
             <div class="wrapper__card_img">
                 <img src="${img}" alt="">
@@ -81,10 +96,19 @@ async function loadMorePokemons() {
 
     // console.log(responseImgJson.sprites);
     for(id; id < endNum; id++) { 
-        let responseImg = await fetch(`https://pokeapi.co/api/v2/pokemon-form/${id + 1}`);
-        let responseImgJson = await responseImg.json();
+        // let responseImg = await fetch(`https://pokeapi.co/api/v2/pokemon-form/${id + 1}`);
+        let pokeImg = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${id + 1}.svg`;
+        // let responseImgJson = await responseImg.json();
+
+        let pokeType = await fetch(`https://pokeapi.co/api/v2/pokemon/${id + 1}`);
+        let pokeTypeJson = await pokeType.json();
+        console.log(pokeTypeJson.types[0].type.name);
+
+        let pokemonType = `./icons/${pokeTypeJson.types[0].type.name}.svg`;
+
+
         console.log(responseToJson.results[id].name);
-        document.getElementById('wrapper').innerHTML += loadPokemons(id, responseToJson.results[id].name, responseImgJson.sprites.front_default);
+        document.getElementById('wrapper').innerHTML += loadPokemons(id, responseToJson.results[id].name, pokeImg, pokemonType);
     }
     console.log(id);
 
