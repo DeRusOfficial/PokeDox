@@ -27,8 +27,6 @@ function getPokedoxApi() {
 
 
 function loadPokemon(pokemonId, pokemonName, pokemonType, pokemonImg, pokemonHeight, pokemonWeight, pokemonAbilities) {
-    console.log(pokemonWeight)
-    addComma(pokemonWeight)
     document.getElementById('wrapper').innerHTML += 
         `
             <div class="wrapper__card">
@@ -57,12 +55,6 @@ function loadPokemon(pokemonId, pokemonName, pokemonType, pokemonImg, pokemonHei
                 </div>
             </div>
         `;
-}
-
-function addComma(pokemonWeight) {
-    // let array = [];
-    // array = pokemonWeight.split(" ")
-    console.log(pokemonWeight.toString().length)
 }
 
 async function getFirstPokemons() {
@@ -102,19 +94,21 @@ async function getMorePokemons() {
 
 async function getPokemonInfo(pokemonId) {
     bg.style.display = 'flex';
-    info.style.display = 'block';
+    info.style.display = 'flex';
 
     loadPokemonInfo(
         pokemonId,
         await getPokemonName(pokemonId), 
         await getPokemonType(pokemonId),
         await getPokemonImg(pokemonId),
-        await getPokemonHeight(pokemonId), 
-        await getPokemonWeight(pokemonId)
+        // await getPokemonHeight(pokemonId), 
+        // await getPokemonWeight(pokemonId),
+        await getPokemonTypesForInfo(pokemonId)
     );
+    console.log(pokemonId + 1)
 }
 
-function loadPokemonInfo(pokemonId, pokemonName, pokemonType, pokemonImg) {
+function loadPokemonInfo(pokemonId, pokemonName, pokemonType, pokemonImg, pokemonTypesInfo) {
     info.innerHTML = 
     `
         <div class="info__pokemon">
@@ -128,7 +122,7 @@ function loadPokemonInfo(pokemonId, pokemonName, pokemonType, pokemonImg) {
             </div>
         </div>
         <div class="info__main">
-            <div class="info__main_type">sd</div>
+            <div class="info__main_type">Types: ${pokemonTypesInfo}</div>
             <div class="info__main_abilities"></div>
         </div>
         <div class="info__stats"></div>
@@ -152,9 +146,9 @@ async function getPokemonName(pokemonId) {
 }
 
 async function getPokemonType(pokemonId) {
-    let pokeType = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId + 1}`);
-    let pokeTypeJson = await pokeType.json();
-    let pokemonType = `./icons/${pokeTypeJson.types[0].type.name}.svg`
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId + 1}`);
+    let responseToJson = await response.json();
+    let pokemonType = `./icons/${responseToJson.types[0].type.name}.svg`
     return pokemonType;
 }
 
@@ -174,7 +168,7 @@ async function getPokemonWeight(pokemonId) {
         let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId + 1}`);
         let responseToJson = await response.json();
         let pokemonWeight = responseToJson.weight;
-        return pokemonWeight;
+        return addComma(pokemonWeight);
 }
 
 async function getPokemonAbilities(pokemonId) {
@@ -182,4 +176,49 @@ async function getPokemonAbilities(pokemonId) {
         let responseToJson = await response.json();
         let pokemonAbilities = responseToJson.abilities[0].ability.name;
         return pokemonAbilities;
+}
+
+
+
+function addComma(pokemonWeight) {
+    let array = [];
+    let letters;
+    letters = pokemonWeight.toString()
+
+    for(let i = 0; i < pokemonWeight.toString().length; i++) {
+        array.push(letters.charAt(i))
+
+        if(i == pokemonWeight.toString().length - 1) {
+            array.splice(i, 0, ',')
+            return loadComma(array)
+        }
+    }
+}
+
+function loadComma(array) {
+    let variable = '';
+    for(let j = 0; j < array.length; j++) {
+        variable += array[j]
+    }
+    return variable;
+}
+
+
+
+async function getPokemonTypesForInfo(pokemonId) {
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId + 1}`);
+    let responseToJson = await response.json();
+    if(responseToJson.types.length > 1) {
+        let typesArray = [];
+        for(let i = 0; i < responseToJson.types.length; i++) {
+            let pokemonTypes = responseToJson.types[i].type.name;
+            typesArray.push(pokemonTypes);
+        }
+        return typesArray
+    } else {
+        let pokemonTypes = responseToJson.types[0].type.name;
+        return pokemonTypes
+    }
+    
+    // return pokemonType;
 }
